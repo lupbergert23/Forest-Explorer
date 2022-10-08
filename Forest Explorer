@@ -1,0 +1,86 @@
+ #include <kipr/wombat.h>
+
+//Define Variables
+int rmotor = 0;
+int lmotor = 3;
+
+int rspeed = 50;
+int lspeed = 45; 
+int delay = 15000;
+int backdelay = 200;
+
+int rturnspeed = 50;
+int lturnspeed = 45;
+int turndelay_left = 1000;
+int turndelay_right = 2500;
+
+int i = 0;
+
+int main()
+{
+  shut_down_in(305);                            //shut down program in 305 seconds = 5 minutes, 5 seconds
+
+  if(digital(1) == 0 && digital(9) == 0)        //if port 1 sensor AND port 9 sensor are not being pressed execute the following code
+  {
+    while(1)                                    //always execute the following code
+    {
+      forward();
+
+      if(digital(1)==1 || digital(9)==1)        //if port 1 sensor OR port 9 sensor are pressed execute the following code
+      {
+        backward();
+        left_turn();
+      }
+
+      if(i==4)                                  //Evasive Maneuver - if counter equals 4 excute the following code
+      {
+        backward();
+        right_turn();
+        forward();
+        
+        i=0;                                    //reset counter to 0
+      }
+    }
+  }
+
+  return 0;                                     //ends program
+}
+
+//Define Functions
+void forward()                                  //function to move robot forward
+{
+  printf("Move Forward\n");                     //print "Move Forward" on screen
+  motor(rmotor,rspeed);				                  //right motor at rspeed (50)
+  motor(lmotor,lspeed);				                  //left motor at lspeed (45)    
+}
+
+void backward()                                 //function to move robot backward
+{
+  printf("Move Backward\n");                    //print "Move Backward" on screen
+  motor(rmotor,-rspeed);				                //right motor at -rspeed (-50)
+  motor(lmotor,-lspeed);				                //left motor at -lspeed (-45)
+  msleep(backdelay);					                  //do the above program for backdelay (0.2) seconds 
+  ao();								                          //turn motors off
+}
+
+void left_turn()
+{
+  printf("Turn Left\n");                        //print "Turn Left" on screen
+  motor(rmotor,rturnspeed);			                //right motor at rturnspeed (50)
+  motor(lmotor,-lturnspeed);			              //left motor at -lturnspeed (-45)
+  msleep(turndelay_left);					              //do the above program for turndelay_left (1) seconds
+  ao();								                          //turns motor off
+
+  i++;                                          //add +1 to counter
+}
+
+void right_turn()
+{
+  printf("Turn Right\n");                       //print "Turn Right" on screen
+  motor(rmotor,-rturnspeed);                    //right motor at -rturnspeed (-50)
+  motor(lmotor,lturnspeed);                     //left motor at lturnspeed (45)
+  msleep(turndelay_right);                      //do the above program for turndelay_right (2.5) seconds
+  ao();
+
+  i++;                                          //add +1 to counter
+}
