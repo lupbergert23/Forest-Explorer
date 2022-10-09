@@ -18,58 +18,58 @@ int i = 0;
 
 int main()
 {
-  shut_down_in(305);							//shut down program in 305 seconds = 5 minutes, 5 seconds
+  shut_down_in(305);                            //shut down program in 305 seconds = 5 minutes, 5 seconds
 
-  if(digital(1) == 0 && digital(9) == 0)		//if port 1 sensor AND port 9 sensor are not being pressed execute the following code
+  if(digital(1) == 0 && digital(9) == 0)		      //if port 1 sensor AND port 9 sensor are not being pressed execute the following code
   {
-    while(1)									//always execute the following code
+    while(1)									                           //always execute the following code
     {
       forward();
 
-      if(digital(1)==1 || digital(9)==1)		//if port 1 sensor OR port 9 sensor are pressed execute the following code
+      if(digital(1)==1 || digital(9)==1)		      //if port 1 sensor OR port 9 sensor are pressed execute the following code
       {
         backward();
         left_turn();
       }
 
-      if(i==4)									//Evasive Maneuver - if counter equals 4 excute the following code
+      if(i==4)								                          //Evasive Maneuver - if counter equals 4 excute the following code
       {
         backward();
         right_turn();
         forward();
         
-        i=0;									//reset counter to 0
+        i=0;									                           //reset counter to 0
       }
     }
   }
 
-  return 0;										//ends program
+  return 0;										                           //ends program
 }
 
 //Define Functions
-void forward()									//function to move robot forward
+void forward()									                         //function to move robot forward
 {
   printf("Move Forward\n");                     //print "Move Forward" on screen
-  motor(rmotor,rspeed);							//right motor at rspeed (50)
-  motor(lmotor,lspeed);							//left motor at lspeed (45)    
+  motor(rmotor,rspeed);							                  //right motor at rspeed (50)
+  motor(lmotor,lspeed);							                  //left motor at lspeed (45)    
 }
 
-void backward()									//function to move robot backward
+void backward()									                        //function to move robot backward
 {
-  printf("Move Backward\n");					//print "Move Backward" on screen
-  motor(rmotor,-rspeed);						//right motor at -rspeed (-50)
-  motor(lmotor,-lspeed);						//left motor at -lspeed (-45)
-  msleep(backdelay);							//do the above program for backdelay (0.2) seconds 
-  ao();											//turn motors off
+  printf("Move Backward\n");					               //print "Move Backward" on screen
+  motor(rmotor,-rspeed);						                  //right motor at -rspeed (-50)
+  motor(lmotor,-lspeed);						                  //left motor at -lspeed (-45)
+  msleep(backdelay);							                     //do the above program for backdelay (0.2) seconds 
+  ao();											                              //turn motors off
 }
 
 void left_turn()
 {
-  printf("Turn Left\n");						//print "Turn Left" on screen
-  motor(rmotor,rturnspeed);						//right motor at rturnspeed (50)
-  motor(lmotor,-lturnspeed);					//left motor at -lturnspeed (-45)
-  msleep(turndelay_left);						//do the above program for turndelay_left (1) seconds
-  ao();											//turns motor off
+  printf("Turn Left\n");						                  //print "Turn Left" on screen
+  motor(rmotor,rturnspeed);						               //right motor at rturnspeed (50)
+  motor(lmotor,-lturnspeed);					               //left motor at -lturnspeed (-45)
+  msleep(turndelay_left);					                 	//do the above program for turndelay_left (1) seconds
+  ao();											                              //turns motor off
 
   i++;                                          //add +1 to counter
 }
