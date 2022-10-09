@@ -20,19 +20,19 @@ int main()
 {
   shut_down_in(305);                            //shut down program in 305 seconds = 5 minutes, 5 seconds
 
-  if(digital(1) == 0 && digital(9) == 0)		      //if port 1 sensor AND port 9 sensor are not being pressed execute the following code
+  if(digital(1) == 0 && digital(9) == 0)        //if port 1 sensor AND port 9 sensor are not being pressed execute the following code
   {
-    while(1)									                           //always execute the following code
+    while(1)                                    //always execute the following code
     {
       forward();
 
-      if(digital(1)==1 || digital(9)==1)		      //if port 1 sensor OR port 9 sensor are pressed execute the following code
+      if(digital(1)==1 || digital(9)==1)        //if port 1 sensor OR port 9 sensor are pressed execute the following code
       {
         backward();
         left_turn();
       }
 
-      if(i==4)								                          //Evasive Maneuver - if counter equals 4 excute the following code
+      if(i==4)                                  //Evasive Maneuver - if counter equals 4 excute the following code
       {
         backward();
         right_turn();
