@@ -1,0 +1,115 @@
+#include <kipr/wombat.h>
+
+//Define Variables
+int rmotor = 0;
+int lmotor = 3;
+
+int rspeed = 38;
+int lspeed = 40;
+int delay = 400;
+int backdelay = 200;
+
+int rturnspeed = 50;
+int lturnspeed = 50;
+int turndelay = 900;
+int turndelay_mini = 150;
+int shortforward = 700;
+
+int frontsenor = 0;
+int rsidesensor = 2;
+int targetdistance = 2900;
+
+int main()
+{
+    printf("Find the Wall\n");
+    while(analog(frontsenor) < targetdistance)
+    {
+        forward();
+        
+		if(analog(rsidesensor) > 2900)
+    	{
+        	left_turn_mini();
+		}
+        
+        if(analog(rsidesensor) < 2200)
+        {
+            right_turn_mini();
+        }
+    }
+    ao();
+	
+    mini_forward();
+	left_turn();
+    ao();
+        
+    while(analog(frontsenor) < targetdistance)
+    {
+        forward();
+        
+		if(analog(rsidesensor) > 2900)
+    	{
+        	left_turn_mini();
+		}
+        
+        if(analog(rsidesensor) < 2200)
+        {
+            right_turn_mini();
+        }
+    }
+    ao();
+
+	return 0;
+}
+
+//Define Fucntions
+void forward()
+{
+    printf("Move Forward\n");
+    motor(rmotor,rspeed);				//right motor at 50 speed
+    motor(lmotor,lspeed);				//left motor at 45 speed
+}
+
+void mini_forward()
+{
+    printf("Move Forward\n");
+    motor(rmotor,rspeed);				//right motor at 50 speed
+    motor(lmotor,lspeed);	//left motor at 45 speed
+    msleep (shortforward);
+   
+}
+
+void backward()
+{
+    printf("Move Backward\n");
+    motor(rmotor,-rspeed);				//right motor at -rspeed speed
+    motor(lmotor,-lspeed);				//left motor at -lspeed speed
+    msleep(backdelay);					//do above commonds for backdelay seconds
+    ao();								//turn motors off
+}
+
+void left_turn()
+{
+    printf("Turn Left\n");    
+    motor(rmotor,rturnspeed);			//right motor at 50 speed
+    motor(lmotor,-lturnspeed);			//left motor at -45 speed
+    msleep(turndelay);	
+   	ao();					//turns motor off
+}
+
+void left_turn_mini()
+{
+    printf("Turn Left Mini\n");
+    motor(rmotor,60);
+    //motor(lmotor,-lturnspeed);
+    msleep(200);
+ 	ao();
+}
+
+void right_turn_mini()
+{
+    printf("Turn Left Mini\n");
+    //motor(rmotor,-rturnspeed);
+    motor(lmotor,60);
+    msleep(turndelay_mini);
+ 	ao();
+}
