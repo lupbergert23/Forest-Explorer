@@ -16,80 +16,81 @@ int turndelay_mini = 150;
 int frontsenor = 0;
 int rsidesensor = 2;
 int targetdistance = 2800;
+int fardistance = 2200;
 
 int main()
 {
-    printf("Find the Wall\n");				//print "Find the Wall"
+    printf("Find the Wall\n");						//print "Find the Wall"
     while(analog(frontsenor) < targetdistance)		//run while loop when the front sensor senses value under targetdistance (2800)
     {
-        loop();						//execute loop function
+        loop();										//execute loop function
     }
-    ao();						//turn motors off
+    ao();											//turn motors off
     
-    printf("Good\n");					//print "Good"
-    mini_forward();					//execute mini_forward function
-    left_turn();					//execute left_turn function
-    ao();						//turn motors off
+    printf("Good\n");								//print "Good"
+    mini_forward();									//execute mini_forward function
+    left_turn();									//execute left_turn function
+    ao();											//turn motors off
         
     while(analog(frontsenor) < targetdistance)		//run while loop when the front sensor senses value under targetdistance (2800)
     {
-        loop();						//execute loop function
+        loop();										//execute loop function
     }
-    ao();						//turn motors off
+    ao();											//turn motors off
 
-    return 0;						//turn robot off
+    return 0;										//turn robot off
 }
 
 //Define Fucntions
 void forward()
 {
-    printf("Move Forward\n");				//print "Move Forward"
-    motor(rmotor,rspeed);				//right motor at rspeed (38)
-    motor(lmotor,lspeed);				//left motor at lspeed (40)
+    printf("Move Forward\n");						//print "Move Forward"
+    motor(rmotor,rspeed);							//right motor at rspeed (38)
+    motor(lmotor,lspeed);							//left motor at lspeed (40)
 }
 
 void mini_forward()
 {
-    printf("Move Forward Mini\n");				
-    motor(rmotor,rspeed);				//right motor at rspeed (38)
-    motor(lmotor,lspeed);				//left motor at lspeed (40)
-    msleep(shortforward_delay);				//run above commands for shortforward_delay  (0.7 sec)
+    printf("Move Forward Mini\n");					//print "Move Forward Mini"
+    motor(rmotor,rspeed);							//right motor at rspeed (38)
+    motor(lmotor,lspeed);							//left motor at lspeed (40)
+    msleep(shortforward_delay);						//run above commands for shortforward_delay  (0.7 sec)
 }
 
 void left_turn()
 {
-    printf("Turn Left\n");    				//print "Turn Left"
-    motor(rmotor,rturnspeed);				//right motor at rspeed (38)
-    motor(lmotor,-lturnspeed);				//left motor at -lspeed (40)
-    msleep(turndelay);					//run above commands for turndelay (0.9 sec)
-    ao();						//turns motors off
+    printf("Turn Left\n");    						//print "Turn Left"
+    motor(rmotor,rturnspeed);						//right motor at rspeed (38)
+    motor(lmotor,-lturnspeed);						//left motor at -lspeed (40)
+    msleep(turndelay);								//run above commands for turndelay (0.9 sec)
+    ao();											//turns motors off
 }
 
 void left_turn_mini()
 {
-    printf("Turn Left Mini\n");				//print "Turn Left Mini"
-    motor(rmotor,60);					//right motor at 60 speed
-    msleep(turndelay_mini);				//do above commands for turndelay_mini (0.15 sec)
+    printf("Turn Left Mini\n");						//print "Turn Left Mini"
+    motor(rmotor,60);								//right motor at 60 speed
+    msleep(turndelay_mini);							//do above commands for turndelay_mini (0.15 sec)
 }
 
 void right_turn_mini()
 {
-    printf("Turn Left Mini\n");				//print "Turn Right Mini"
-    motor(lmotor,60);					//left motor at 60 speed
-    msleep(turndelay_mini);				//do above commands for turndelay_mini (0.15 sec)
+    printf("Turn Left Mini\n");						//print "Turn Right Mini"
+    motor(lmotor,60);								//left motor at 60 speed
+    msleep(turndelay_mini);							//do above commands for turndelay_mini (0.15 sec)
 }
 
 void loop(){
 
-    forward();						//execute forward function
+    forward();										//execute forward function
         
-    if(analog(rsidesensor) > 2900)			//run following code if side sensor senses value over 2900
+    if(analog(rsidesensor) > targetdistance)		//run following code if side sensor senses value over targetdistance (2800)
     {
-        left_turn_mini();				//execute left_turn_mini function
+        left_turn_mini();							//execute left_turn_mini function
     }
 
-    if(analog(rsidesensor) < 2200)			//run following code if side sensor senses value under 2200
+    if(analog(rsidesensor) < fardistance)			//run following code if side sensor senses value under fardistance (2200)
     {
-        right_turn_mini();				//execute right_turn_mini function
+        right_turn_mini();							//execute right_turn_mini function
     }
 }
