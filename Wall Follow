@@ -20,7 +20,7 @@ int fardistance = 2200;
 
 int main()
 {
-    printf("Find the Wall\n");						//print "Find the Wall"
+    printf("Find the Wall\n");                      //print "Find the Wall"
     while(analog(frontsenor) < targetdistance)		//run while loop when the front sensor senses value under targetdistance (2800)
     {
         loop();										//execute loop function
