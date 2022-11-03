@@ -75,7 +75,7 @@ void left_turn_mini()
 
 void right_turn_mini()
 {
-    printf("Turn Left Mini\n");                     //print "Turn Right Mini"
+    printf("Turn Right Mini\n");                    //print "Turn Right Mini"
     motor(lmotor,60);                               //left motor at 60 speed
     msleep(turndelay_mini);                         //do above commands for turndelay_mini (0.15 sec)
 }
