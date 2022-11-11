@@ -22,7 +22,7 @@ int i;
 
 int main()
 {
-    while(analog(frontsensor) < fronttarget)       //while front sensor is less than 2800
+    while(analog(frontsensor) < fronttarget)       //while front sensor is less than 2600
     {
         if(analog(bottomsensor) < bottomtarget)    //if bottom sensor is off the black line
         {
