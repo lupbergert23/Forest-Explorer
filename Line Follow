@@ -31,7 +31,7 @@ int main()
 
         if(analog(bottomsensor) > bottomtarget)    //if bottom sensor is on the black line
         {
-            right_turn_mini();                     //execute left_turn_mini function
+            right_turn_mini();                     //execute right_turn_mini function
         }
     }
     ao();                                           //turn motors off
@@ -44,7 +44,7 @@ int main()
 //Define Fucntions
 void right_turn_mini()
 {
-    printf("Turn Left Mini\n");                    //print "Turn Left Mini"
+    printf("Turn Right Mini\n");                   //print "Turn Right Mini"
     motor(lmotor,fastspeed);                       //left motor at fastspeed (80)
     motor(rmotor,slowspeed);                       //right motor at slowspeed (20)
 }
