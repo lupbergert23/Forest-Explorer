@@ -1,0 +1,94 @@
+#include <kipr/wombat.h>
+//     printf("obj_x = %d\n", get_object_center_x(0,0));
+
+//Define Variables
+int rmotor = 0;
+int lmotor = 3;
+
+int slowspeed = 20;
+int fastspeed = 80;
+
+int frontsensor = 0;
+int bottomsensor = 5;
+
+int fronttarget = 2600;
+int bottomtarget = 2500;
+
+int servo = 0;
+int servo_delay = 300;
+
+int red = 0;
+int green = 1;
+int yellow = 2;
+
+int red_position_1 = 300;
+int red_position_2 = 1800;
+int green_position_1 = 600;
+int green_position_2 = 1500;
+int yellow_position_1 = 900;
+int yellow_position_2 = 1200;
+
+int main()
+{
+    camera_open_black();                           //turn on camera
+    enable_servos();                               //turn on servos
+    
+    while(1)
+    {
+        camera_update();                           //update camera image
+        msleep(50);                                //take 0.05 seconds to update image
+
+        if(get_object_count(red) > 0)              //if red objects are in camera view
+        {
+            red_detected();                        //execute red_detected function
+        }
+       
+        if(get_object_count(green) > 0)            //if green objects are in camera view
+        {
+            green_detected();                      //execute green_detected function
+        }
+       
+        if(get_object_count(yellow) > 0)           //if yellow objects are in camera view
+        {
+            yellow_detected();                     //execute yellow_detected function
+        }
+
+        //if seeing nothing code
+
+    }
+   
+    camera_close();                                //turn off camera
+    disable_servos();                              //turn off servos
+    return 0;
+}
+
+//Define Functions
+void red_detected()
+{
+    printf("RED\n");
+    set_servo_position(servo, red_position_1);
+    msleep(servo_delay);
+
+    set_servo_position(servo, red_position_2);
+    msleep(servo_delay);
+}
+
+void green_detected()
+{
+    printf("GREEN\n");
+    set_servo_position(servo, green_position_1);
+    msleep(servo_delay);
+           
+    set_servo_position(servo, green_position_2);
+    msleep(servo_delay);
+}
+
+void yellow_detected()
+{
+    printf("YELLOW\n");
+    set_servo_position(servo, yellow_position_1);
+    msleep(servo_delay);
+
+    set_servo_position(servo, yellow_position_2);
+    msleep(servo_delay);
+}
