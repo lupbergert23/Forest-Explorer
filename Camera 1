@@ -52,8 +52,8 @@ int main()
         {
             yellow_detected();                     //execute yellow_detected function
         }
-
-        //if seeing nothing code
+        
+        //if for no objects detected
 
     }
    
@@ -65,30 +65,30 @@ int main()
 //Define Functions
 void red_detected()
 {
-    printf("RED\n");
-    set_servo_position(servo, red_position_1);
-    msleep(servo_delay);
+    printf("RED\n");                               //print "RED"
+    set_servo_position(servo, red_position_1);     //set servo position to red_position_1 (300)
+    msleep(servo_delay);                           //do above code for servo_delay (0.3) seconds
 
-    set_servo_position(servo, red_position_2);
-    msleep(servo_delay);
+    set_servo_position(servo, red_position_2);     //set servo position to red_position_2 (1800)
+    msleep(servo_delay);                           //do above code for servo_delay (0.3) seconds
 }
 
 void green_detected()
 {
-    printf("GREEN\n");
-    set_servo_position(servo, green_position_1);
-    msleep(servo_delay);
+    printf("GREEN\n");                              //print "GREEN"
+    set_servo_position(servo, green_position_1);    //set servo position to green_position_1 (600)
+    msleep(servo_delay);                            //do above code for servo_delay (0.3) seconds
            
-    set_servo_position(servo, green_position_2);
-    msleep(servo_delay);
+    set_servo_position(servo, green_position_2);    //set servo position to green_position_2 (1500)
+    msleep(servo_delay);                            //do above code for servo_delay (0.3) seconds
 }
 
 void yellow_detected()
 {
     printf("YELLOW\n");
-    set_servo_position(servo, yellow_position_1);
-    msleep(servo_delay);
+    set_servo_position(servo, yellow_position_1);   //set servo position to yellow_position_1 (900)
+    msleep(servo_delay);                            //do above code for servo_delay (0.3) seconds
 
-    set_servo_position(servo, yellow_position_2);
-    msleep(servo_delay);
+    set_servo_position(servo, yellow_position_2);   //set servo position to yellow_position_2 (1200)
+    msleep(servo_delay);                            //do above code for servo_delay (0.3) seconds
 }
