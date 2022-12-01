@@ -33,8 +33,8 @@ int main()
             counter_red++;                         //add 1 to counter_red
         }
         
-        if(get_object_count(red) > 1 && counter_red == 5)  //if red object count is greater than 1 
-        {                                                  //and counter_red is equal to 5 
+        if(get_object_count(red) > 1 && counter_red == 5)  //if red object count is greater than 1 and counter_red is equal to 5
+        {
             printf("Seeing Red\n");                //print “Seeing Red”
             red_detected();                        //run red_detected function 
             
