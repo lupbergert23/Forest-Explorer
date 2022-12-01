@@ -1,0 +1,77 @@
+#include <kipr/wombat.h>
+
+//Define Variables
+int rmotor = 0;
+int lmotor = 3;
+
+int speed = 20;
+int no_speed = 0;
+
+int frontsensor = 0;
+int fronttarget = 2800;
+
+int red = 0;
+int camera_center = 80;
+int camera_delay = 50;
+
+int count = 0;
+int counter_red = 0;
+
+int obj_x;
+
+int main()
+{
+    camera_open_black();                           //turn on camera
+    
+    while(analog(frontsensor) < fronttarget)       //while front senses value below fronttarget (2800)
+    {
+        camera_update();                           //update camera image
+        msleep(camera_delay);                      //take 0.05 seconds to update image
+        
+        if(get_object_count(red) > 1)              //if red object count is greater than 1
+        {
+            counter_red++;                         //add 1 to counter_red
+        }
+        
+        if(get_object_count(red) > 1 && counter_red == 5)  //if red object count is greater than 1 
+        {                                                  //and counter_red is equal to 5 
+            printf("Seeing Red\n");                //print “Seeing Red”
+            red_detected();                        //run red_detected function 
+            
+            counter_red = 0;                       //reset counter_red
+        }
+    }
+    camera_close();                                //turn off camera
+    return 0;                                      
+}
+
+//Define Functions
+void red_detected()
+{ 
+    while(analog(frontsensor) < fronttarget)       //while front senses value below fronttarget (2800)
+    {
+        camera_update();                           //update camera image
+        msleep(camera_delay);                      //take 0.05 seconds to update image
+
+	      printf("obj_x = %d\n", get_object_center_x(red,0));   //print “obj_x = object location”
+        
+        if(get_object_center_x(red,0) == camera_center)   //if x-location of object equals 80
+        {
+            motor(lmotor,speed);                    //left motor at speed (30)
+            motor(rmotor,speed);                    //right motor at speed (30)
+        }
+        
+        if(get_object_center_x(red,0) < camera_center)   //if x-location of object is less than 80
+        {
+            motor(lmotor,no_speed);                 //left motor at no_speed (0)
+            motor(rmotor,speed);                    //right motor at speed (30)
+        }
+
+        if(get_object_center_x(red,0) > camera_center)   //if x-location of object is more than 80
+        {
+            motor(lmotor,speed);                    //left motor at speed (30)
+            motor(rmotor,no_speed);                 //right motor at no_speed (0)
+        }
+    }
+    ao();                                           //turn robot motors off
+}
