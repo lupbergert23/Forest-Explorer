@@ -1,0 +1,322 @@
+#include <kipr/wombat.h>
+#include <stdlib.h>
+//NOTES FOR SOHAN: REMEMBER THAT THE FIRST TEST WITH A NEW BATTERY WILL EXTEND OUT
+//NOTES FOR SOHAN: lmotor and rmotor are switched - oops
+
+//NOTES FOR SOHAN: DO NOT TOUCH SPEEDS OR TIMES
+//NOTES FOR SOHAN: in comments, ++ means increase
+//NOTES FOR SOHAN: in comments, -- means decrease
+
+int lmotor = 0;
+int rmotor = 3;
+
+int servo_middle = 0;
+int servo_rotate = 1;
+int mini_servo = 2;
+int servo_lift = 3;
+
+int front_sensor = 0;
+int wall_sensor = 1;
+int RET_sensor = 2;
+
+int i = 1;
+int j = 1;
+
+void drive();
+void turn_left();
+void turn_right();
+void RET_wall_follow(int speed, int port);
+void smooth_servo(int port, int final_position, float time);
+void smooth_servo_mini(int port, int final_position, float time);
+void key_wall_follow(int speed, int port, int distance);
+void backup_wall_follow(int speed, int port, int distance);
+
+int main()
+{
+    //msleep(43000);			//wait 43 seconds for ANGEL+XAVIER BOT to pass
+    
+    RET_wall_follow(1200, wall_sensor);	//wall follow along first PVC wall, see RET_wall_follow for more comments
+    
+    //adjust into position
+    drive(3000, -1500);			//backward 3000 ticks at -1500 speed; ++: move farther, --: move less
+    turn_left(825, 800);		//turn left 825 ticks at 800 speed; ++: turn more, --: turn less
+    drive(1700, 1500);			//forward 1700 ticks at 1500 speed; ++: move farther, --, move less
+    turn_right(525, 800); 		//turn left 525 ticks at 800 speed; ++: turn more, --: turn less
+    drive(1300, 1500);			//forward 1300 ticks at 1500 speed; ++: move farther, --, move less
+    
+    //drop claw
+    smooth_servo(servo_middle, 576, 0.75);	//servo_middle to "576"; ++: farther from floor, --: closer to floor
+    msleep(500);
+    
+    drive(1450, 800);	//forward 1450 ticks at 800 speed; ++: move farther, --, move less
+    
+    //grab RET
+    smooth_servo_mini(mini_servo, 475, 0.75);	//mini_servo to "475"; ++: claw open more, --: claw close more
+    drive(50, -800); 	//backward 50 ticks at -800 speed; ++: move farther, --, move less
+
+    
+    //adjustment get parallel to RET "track"
+    turn_left(100, 800);	//turn left 100 ticks at 800 speed
+    drive(100, -1200);		//backward 100 ticks at -1200 speed
+    turn_left(100, 800);	//turn left 100 ticks at 800 speed
+    drive(100, -1200);		//backward 100 ticks at -1200 speed
+    turn_left(150, 800);	//turn left 150 ticks at 800 speed
+    drive(1200, -1200);		//backward 1200 ticks at -1200 speed
+    //should be approx. 8 inches from the base of the RET
+    
+    //lift up to 1st corner
+    smooth_servo(servo_middle, 1200, 0.75);		//servo_middle to "1200"; ++: lift up more, --: lift up less
+    
+    //rotate around first corner
+    smooth_servo(servo_rotate, 750, 0.75);		//servo_rotate to "750"; ++: turn less, --: turn more
+    
+    //move across first platform
+    turn_left(250, 800);		//turn left 250 ticks at 800 speed
+    drive(900, 800);			//forward 900 ticks at 800 speed
+    
+    //rotate around 2nd corner
+    smooth_servo(servo_rotate, 1000, 0.75);		//servo_rotate to "1000"; ++: turn more, --: turn less
+    turn_left(150, 800);		//turn left 150 ticks at 800 speed
+    
+    //lift up to 3rd corner
+    smooth_servo(servo_lift, 550, 0.5);		//servo_lift to "550"; ++: lift up more, --: lift up less
+    										//*EXTRA NOTE: will bring claw closer to the pipes
+    smooth_servo(servo_middle, 1400, 0.5);	//servo_middle to "1400"; ++: lift up more, --: lift up less 
+    
+    //rotate around 3rd corner
+    drive(300, 800);		//forward 300 ticks at 800 speed
+    smooth_servo(servo_rotate, 500, 0.75);		//servo_rotate to "500"; ++: turn less, --: turn more
+    
+    //move across second platform
+    drive(900, 800);		//forward 900 ticks at 800 speed
+	smooth_servo(servo_middle, 1360, 0.75);		//servo_middle to "1360"; ++: lift up more, --: lift up less
+    
+    //rotate around 4th corner
+    smooth_servo(servo_lift, 650, 0.5);			//servo_lift to "550"; ++: lift up more, --: lift up less
+    turn_left(300, 800);						//turn left 300 ticks at 800 speed
+    smooth_servo(servo_rotate, 1300, 0.75);		//servo_rotate to "1300"; ++: turn more, --: turn less
+    
+    //lift to 5th corner
+    smooth_servo(servo_lift, 1100, 1);			//servo_lift to "1100"; ++: lift up more, --: lift up less
+    smooth_servo(servo_rotate, 300, 0.75);		//servo_rotate to "300"; ++: turn less, --: turn more
+    
+    drive(200,800);		//drive forward 200 ticks at 800 speed, ensures that RET is on top platform
+    
+    //open claw
+	smooth_servo(mini_servo, 1800, 1);			//release RET
+    
+    //reset
+    smooth_servo(servo_middle, 2000, 0.5);
+    smooth_servo(servo_rotate, 1550, 0.5);
+    smooth_servo(mini_servo, 1800, 0.5);
+    smooth_servo(servo_lift, 200, 0.5);
+    
+    //After Reverse
+    
+    turn_left(1100, 800);		//turn left 1100 ticks at 800 speed
+    
+    while(analog(front_sensor) < 2800)		//drive forward until front sensor sees wall; ++: closer, --: farther
+    {
+        mav(lmotor, 1200);
+        mav(rmotor, 1200);
+    }
+    
+    turn_left(1000, 800);		//turn left 1000 ticks at 800 speed
+    
+    while(analog(wall_sensor) > 1000)		//drive forward until front sensor sees wall again; ++: 
+    {
+        mav(lmotor, 1200);
+        mav(rmotor, 1200);
+    }
+    
+    turn_left(400, 800); 		//turn left 1000 ticks at 800 speed
+    
+    backup_wall_follow(-800, wall_sensor, 1200);//back up along second PVC wall, see backup_wall_follow
+    
+    drive(500, -1200);			//square up at back wall
+    
+    
+    key_wall_follow(800, wall_sensor, 1200);		//wall follow along second PVC wall to first key, see key_wall_follow
+    msleep(100);
+    
+    //lift claw
+    smooth_servo(servo_lift, 1050, 1);	//servo_lift to "1050"; ++: lift up more, --: lift up less
+    smooth_servo(servo_middle, 300, 1);	//servo_middle to "300"; ++: farther from floor, --: closer to floor
+    
+    while(i <= 6)  //loop to drop claw and pull over 1st key
+    {
+        enable_servos();
+        
+        set_servo_position(servo_lift, 1050+(50*i));
+        msleep(100);
+        
+        set_servo_position(servo_middle, 300-(50*i));
+        msleep(100);
+        
+        disable_servos();
+        
+        i++;
+    }
+    
+    smooth_servo(servo_middle, 1100, 1);	//lift claw over tower
+    
+    key_wall_follow(800, wall_sensor, 4000);	//wall follow along second PVC wall to second key, see key_wall_follow
+    msleep(100);
+    
+    smooth_servo(servo_middle, 300, 1);		//start to drop claw
+
+    while(j <= 6)	//loop to drop claw and pull over 2nd key
+    {
+        enable_servos();
+        
+        set_servo_position(servo_lift, 1350+(50*j));
+        msleep(100);
+        
+        set_servo_position(servo_middle, 300-(50*j));
+        msleep(100);
+        
+        disable_servos();
+        
+        j++;
+    }
+    
+    return 0;
+}
+
+
+//drive forward and backward
+void drive(int distance, int speed)	//input distance and speed, +speed forward, -speed backward
+{
+	cmpc(lmotor);			//reset motor tick
+	cmpc(rmotor);			//reset motor tick
+	while(abs(gmpc(lmotor)) < distance)
+    {
+        mav(lmotor, speed);	//mav: move at velocity (-1000, 1000)
+        mav(rmotor, speed);
+    }
+    mav(lmotor, 0);			//hold
+    mav(rmotor, 0);
+    msleep(20);
+}
+
+//turn left
+void turn_left(int distance, int speed)
+{
+	cmpc(lmotor);			//reset motor tick
+	cmpc(rmotor);			//reset motor tick
+	while(abs(gmpc(lmotor)) < distance)
+    {
+        mav(lmotor, speed);	//mav: move at velocity (-1000, 1000)
+        mav(rmotor, -speed);	
+    }
+    mav(lmotor, 0);			//hold
+    mav(rmotor, 0);
+    msleep(20);
+}
+
+//turn right
+void turn_right(int distance, int speed)
+{
+	cmpc(lmotor);			//reset motor tick
+	cmpc(rmotor);			//reset motor tick
+	while(abs(gmpc(rmotor)) < distance)
+    {
+        mav(lmotor, -speed);	//mav: move at velocity (-1000, 1000)
+        mav(rmotor, speed);	
+    }
+    mav(lmotor, 0);			//hold
+    mav(rmotor, 0);
+    msleep(20);
+}
+
+//move servo smoothly
+void smooth_servo(int port, int final_position, float time)
+{
+    enable_servos();
+
+    float start_time = seconds();		//get current time
+    int start_position = get_servo_position(port);		//get current servo position
+    int position_difference = final_position - start_position;	//calculate servo position difference
+
+    while(seconds()-start_time < time)	//until "seconds" have passed
+    {
+        float position_modifier = (seconds()-start_time)/time;		//calculate position modifier based on time
+        set_servo_position(port,start_position+(position_difference*position_modifier));	//set_servo_position gradually
+    }
+    set_servo_position(port, final_position);	//ensure final servo position is reached
+    msleep(50);
+
+	disable_servos();
+}
+
+void smooth_servo_mini(int port, int final_position, float time)	//same as smooth_servo, but does not disable
+    																//ensures that mini_servo holds a hard grip
+{
+    enable_servos();
+
+    float start_time = seconds();
+    int start_position = get_servo_position(port);
+    int position_difference = final_position - start_position;
+
+    while(seconds()-start_time < time)
+    {
+        float position_modifier = (seconds()-start_time)/time;
+        set_servo_position(port,start_position+(position_difference*position_modifier));
+}
+    set_servo_position(port, final_position);
+    msleep(50);
+}
+
+void RET_wall_follow(int speed, int port)
+{
+	cmpc(lmotor);			//reset motor tick
+	cmpc(rmotor);			//reset motor tick
+	while(analog(RET_sensor) > 3500)		//until RET_sensor senses RET; "3500" 
+    {
+        int error = analog(port) - 2000;		//drive around "2000"; ++: far from wall, --: close to wall
+        										//"2000" = 1.75 inches from wheel
+        float speed_modifier = error * 0.12;	//"0.12"; ++: sharper turn, --: smoother turn, ASK ANGEL
+
+        mav(lmotor,speed-speed_modifier);
+        mav(rmotor,speed+speed_modifier);
+    }
+    mav(lmotor,0);		//hold
+    mav(rmotor,0);
+    msleep(20);
+}
+
+void key_wall_follow(int speed, int port, int distance)
+{
+	cmpc(lmotor);			//reset motor tick
+	cmpc(rmotor);			//reset motor tick
+	while(abs(gmpc(rmotor)) < distance)		//until robot travels "distance"
+    {
+        int error = analog(port) - 2250;	//drive around "2250"; ++: far from wall, --: close to wall
+        									//"2250" = 1 inch from wheel
+        float speed_modifier = error * 0.1;	//"0.1"; ++: sharper turn, --: smoother turn, ASK ANGEL
+
+        mav(lmotor,speed-speed_modifier);
+        mav(rmotor,speed+speed_modifier);
+    }
+    mav(lmotor,0);		//hold
+    mav(rmotor,0);
+    msleep(20);
+}
+
+void backup_wall_follow(int speed, int port, int distance)
+{
+	cmpc(lmotor);			//reset motor tick
+	cmpc(rmotor);			//reset motor tick
+	while(digital(0) == 0)		//until back button is pressed
+    {
+        int error = analog(port) - 2250;		//drive around "2250"; ++: far from wall, --: close to wall
+	        									//"2250" = 1 inch from wheel, DO NOT TOUCH
+        float speed_modifier = error * 0.04;	//"0.04"; ++: sharper turn, --: smoother turn, ASK ANGEL
+
+        mav(lmotor,speed+speed_modifier);
+        mav(rmotor,speed-speed_modifier);
+    }
+    mav(lmotor,0);
+    mav(rmotor,0);
+    msleep(20);
+}
